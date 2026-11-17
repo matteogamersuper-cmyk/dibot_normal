@@ -49,6 +49,19 @@ const commands = [
                 .setTimestamp();
             await interaction.reply({ embeds: [embed] });
         }
+    },
+    {
+        data: new SlashCommandBuilder()
+            .setName('shop')
+            .setDescription('Shop (Soldi Virtuali)'),
+        execute: async (interaction) => {
+            const embed = new EmbedBuilder()
+                .setColor(0x0099ff)
+                .setTitle('Shop')
+                .setDescription('Lo Shop e i soldi virtuali sono in arrivo (soldi tramite /balance e shop con /shop)')
+                .setTimestamp();
+            await interaction.reply({ embeds: [embed] });
+        }
     }
 ];
 
