@@ -62,6 +62,12 @@ const commands = [
                 .setTimestamp();
             await interaction.reply({ embeds: [embed] });
         }
+    },
+    {
+        data: new SlashCommandBuilder()
+            .setName('shop buy')
+            .setDescription('Acquista un oggetto dallo shop.'),
+        execute: async (interaction) => interaction.reply('Funzione di acquisto in arrivo!'),
     }
 ];
 
