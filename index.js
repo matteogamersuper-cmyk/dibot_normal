@@ -65,7 +65,7 @@ const commands = [
     },
     {
         data: new SlashCommandBuilder()
-            .setName('shop buy')
+            .setName('shop_buy')
             .setDescription('Acquista un oggetto dallo shop.'),
         execute: async (interaction) => interaction.reply('Funzione di acquisto in arrivo!'),
     }
