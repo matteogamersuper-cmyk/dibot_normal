@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 
 const {
@@ -8,6 +9,11 @@ const {
     SlashCommandBuilder,
     EmbedBuilder,
 } = require('discord.js');
+
+const {
+    ClusterClient,
+    getInfo
+} = require('discord-hybrid-sharding');
 
 const token = process.env.DISCORD_TOKEN;
 
@@ -47,6 +53,7 @@ const commands = [
                 .setTitle('Chatbot AI')
                 .setDescription('Usa Il Bot AI Per Usare l\'AI\nNome Bot: Di AI (ChatBot)')
                 .setTimestamp();
+
             await interaction.reply({ embeds: [embed] });
         }
     },
@@ -60,6 +67,7 @@ const commands = [
                 .setTitle('Shop')
                 .setDescription('Lo Shop e i soldi virtuali sono in arrivo (soldi tramite /balance e shop con /shop)')
                 .setTimestamp();
+
             await interaction.reply({ embeds: [embed] });
         }
     },
@@ -71,7 +79,20 @@ const commands = [
     }
 ];
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// Informazioni sugli shard assegnati al processo
+const shardInfo = getInfo();
+
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds
+    ],
+    shards: shardInfo.SHARD_LIST,
+    shardCount: shardInfo.TOTAL_SHARDS
+});
+
+// Inizializzazione Hybrid Sharding
+client.cluster = new ClusterClient(client);
+
 const rest = new REST({ version: '10' }).setToken(token);
 
 async function registerCommands(applicationId) {
@@ -80,6 +101,7 @@ async function registerCommands(applicationId) {
 
     for (const command of commands) {
         const commandData = command.data.toJSON();
+
         const existingCommand = existingCommands.find(
             (registeredCommand) => (
                 registeredCommand.name === commandData.name
@@ -93,38 +115,71 @@ async function registerCommands(applicationId) {
                 { body: commandData },
             );
         } else {
-            await rest.post(applicationCommandsRoute, { body: commandData });
+            await rest.post(applicationCommandsRoute, {
+                body: commandData,
+            });
         }
     }
 }
 
+// Quando il client è pronto
 client.once('clientReady', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    try {
-        await registerCommands(client.user.id);
-        console.log('Comandi slash registrati globalmente.');
-    } catch (error) {
-        console.error('Registrazione dei comandi fallita:', error.message);
-        process.exitCode = 1;
-        await client.destroy();
+    console.log(`Cluster ID: ${client.cluster.id}`);
+    console.log(`Cluster Count: ${client.cluster.count}`);
+    console.log(`Shard List: ${client.cluster.shardList}`);
+
+    // Registra i comandi una sola volta
+    if (client.cluster.id === 0) {
+        try {
+            await registerCommands(client.user.id);
+            console.log('Comandi slash registrati globalmente.');
+        } catch (error) {
+            console.error(
+                'Registrazione dei comandi fallita:',
+                error.message
+            );
+        }
     }
+
+    // Comunica al manager che il cluster è pronto
+    client.cluster.triggerReady();
 });
 
+// Gestione interazioni
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    const command = commands.find((item) => item.data.name === interaction.commandName);
+    const command = commands.find(
+        (item) => item.data.name === interaction.commandName
+    );
+
     if (command) {
-        await command.execute(interaction);
+        try {
+            await command.execute(interaction);
+        } catch (error) {
+            console.error('Errore comando:', error);
+
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({
+                    content: 'Si è verificato un errore!',
+                    ephemeral: true
+                }).catch(() => {});
+            } else {
+                await interaction.reply({
+                    content: 'Si è verificato un errore!',
+                    ephemeral: true
+                }).catch(() => {});
+            }
+        }
     }
 });
 
-if (require.main === module) {
-    client.login(token).catch((error) => {
-        console.error('Avvio del bot fallito:', error.message);
-        process.exitCode = 1;
-    });
-}
+// Login
+client.login(token).catch((error) => {
+    console.error('Avvio del bot fallito:', error);
+    process.exitCode = 1;
+});
 
 module.exports = { registerCommands };
