@@ -85,7 +85,7 @@ const commands = [
             const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
                 .setTitle('Stato del Bot')
-                .setDescription('Bot: Attivo e funzionante!\nShard ID: ' + interaction.client.shard.ids[0] + '\nCluster ID: ' + interaction.client.cluster.id + '\nUptime:' + ' ' + Math.floor(interaction.client.uptime / 1000) + ' secondi')
+                .setDescription('Bot: Attivo e funzionante!' + '\nUptime:' + ' ' + Math.floor(interaction.client.uptime / 1000) + ' secondi')
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });
