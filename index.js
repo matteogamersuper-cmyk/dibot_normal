@@ -76,6 +76,20 @@ const commands = [
             .setName('shop_buy')
             .setDescription('Acquista un oggetto dallo shop.'),
         execute: async (interaction) => interaction.reply('Funzione di acquisto in arrivo!'),
+    },
+    {
+        data: new SlashCommandBuilder()
+            .setName('status')
+            .setDescription('Verifica lo stato del bot.'),
+            execute: async (interaction) => {
+            const embed = new EmbedBuilder()
+                .setColor(0x0099ff)
+                .setTitle('Stato del Bot')
+                .setDescription('Bot: Attivo e funzionante!\nShard ID: ' + interaction.client.shard.ids[0] + '\nCluster ID: ' + interaction.client.cluster.id + '\nUptime:' + ' ' + Math.floor(interaction.client.uptime / 1000) + ' secondi')
+                .setTimestamp();
+
+            await interaction.reply({ embeds: [embed] });
+            }
     }
 ];
 
