@@ -51,7 +51,7 @@ const commands = [
             const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
                 .setTitle('Chatbot AI')
-                .setDescription('Usa Il Bot AI Per Usare l\'AI\nNome Bot: Di AI (ChatBot)')
+                .setDescription('Il ChatBot AI è in arrivo: Controlla gli Annunci sul server discord per sapere quando sarà disponibile!')
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed] });

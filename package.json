@@ -1,9 +1,9 @@
 {
   "name": "dibot_normal",
   "version": "1.0.0",
-  "description": "A Discord Bot",
+  "description": "A Discord Bot: From Di Studios",
   "license": "ISC",
-  "author": "",
+  "author": "DiStudios Team",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
