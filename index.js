@@ -138,7 +138,7 @@ async function registerCommands(applicationId) {
 
 // Quando il client è pronto
 client.once('clientReady', async () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`Accesso come: ${client.user.tag}!`);
 
     console.log(`Cluster ID: ${client.cluster.id}`);
     console.log(`Cluster Count: ${client.cluster.count}`);
